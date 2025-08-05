@@ -21,7 +21,7 @@ static HELLO: &[u8] = b"Hello World!";
 pub extern "C" fn _start() -> ! {
     unsafe{
         uart::uart_init();
-        uart::uart_putc(1);
+        uart::uart_putc(b'X');
     }
     loop {}
 }
