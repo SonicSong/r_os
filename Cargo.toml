@@ -11,6 +11,9 @@ test = false
 doctest = false
 bench = false
 
+[build]
+rustflags = ["-C", "link-arg=-Tlinker.ld"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
