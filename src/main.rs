@@ -1,29 +1,27 @@
 #![no_std]
 #![no_main]
 
-mod modules;
-
+use core::arch::global_asm;
 use core::panic::PanicInfo;
 
+global_asm!(include_str!("boot.s"));
+
+mod modules;
 use modules::uart;
 
-mod boot {
-    use core::arch::global_asm;
-
-    global_asm!(
-        ".section .test._start"
-    );
-}
-
-static HELLO: &[u8] = b"Hello World!";
-
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
-    unsafe{
-        uart::uart_init();
-        uart::uart_putc(b'X');
+pub extern "C" fn rust_main() -> ! {
+    // Initialize basic hardware
+    unsafe {
+        uart::init();
+
+        // Send some test output
+        uart::puts("ROS booting on Raspberry Pi Zero 2 W...\n");
     }
-    loop {}
+    // Main OS loop
+    loop {
+        // Your OS code here
+    }
 }
 
 #[panic_handler]

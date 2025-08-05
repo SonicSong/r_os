@@ -34,11 +34,33 @@ pub unsafe fn uart_init() {
     write_volatile(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 }
 
-pub fn uart_putc(c: u8) {
-    const TX_FIFO_FULL: u32 = 1 << 5;
-    unsafe {
-        // Wait if TX FIFO is full
-        while read_volatile(UART0_FR) & TX_FIFO_FULL != 0 {}
-        write_volatile(UART0_DR, c as u32);
+pub unsafe fn init() {
+    // Disable UART
+    write_volatile(UART0_CR, 0);
+
+    // Set baud rate (115200 @ 48MHz)
+    write_volatile(UART0_IBRD, 26);
+    write_volatile(UART0_FBRD, 3);
+
+    // 8 bits, no parity, 1 stop bit, FIFO enabled
+    write_volatile(UART0_LCRH, 0x70);
+
+    // Enable UART, TX, RX
+    write_volatile(UART0_CR, 0x301);
+}
+
+// Write a character to UART
+pub unsafe fn putc(c: u8) {
+    // Wait for UART to be ready
+    while (read_volatile(UART0_FR) & 0x20) != 0 {}
+
+    // Write character
+    write_volatile(UART0_DR, c as u32);
+}
+
+// Write a string to UART
+pub fn puts(s: &str) {
+    for c in s.bytes() {
+        unsafe { putc(c); }
     }
 }

@@ -2,32 +2,32 @@ ENTRY(_start)
 
 SECTIONS
 {
-    . = 0x8000;
+    /* Raspberry Pi Zero 2 W starts execution at 0x80000 */
+    . = 0x80000;
+
     __start = .;
-    .text :
-    {
-        KEEP(*(.text.boot))
-        *(.text)
+
+    .text : {
+        KEEP(*(.text.boot)) /* Keep boot section at the start */
+        *(.text .text.*)
     }
-    . = ALIGN(4096);
-    .rodata :
-    {
-        *(.rodata)
+
+    .rodata : {
+        *(.rodata .rodata.*)
     }
-    . = ALIGN(4096);
-    .data :
-    {
-        *(.data)
+
+    .data : {
+        *(.data .data.*)
     }
-    . = ALIGN(4096);
-    __bss_start = .;
-    .bss :
-    {
-        bss = .;
-        *(.bss)
+
+    .bss : {
+        __bss_start = .;
+        *(.bss .bss.*)
+        *(COMMON)
+        __bss_end = .;
     }
-    . = ALIGN(4096);
-    __bss_end = .;
-    __bss_size = __bss_end - __bss_start;
+
+    /* End of kernel */
+    . = ALIGN(8);
     __end = .;
 }
