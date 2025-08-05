@@ -11,16 +11,13 @@ use modules::uart;
 
 #[no_mangle]
 pub extern "C" fn rust_main() -> ! {
-    // Initialize basic hardware
     unsafe {
         uart::init();
-
-        // Send some test output
         uart::puts("ROS booting on Raspberry Pi Zero 2 W...\n");
     }
-    // Main OS loop
+
     loop {
-        // Your OS code here
+
     }
 }
 

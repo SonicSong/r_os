@@ -16,24 +16,6 @@ const UART0_CR : *mut u32 = (UART0_BASE + 0x30) as *mut _;
 const UART0_IMSC : *mut u32 = (UART0_BASE + 0x38) as *mut _;
 const UART0_ICR : *mut u32 = (UART0_BASE + 0x44) as *mut _;
 
-pub unsafe fn uart_init() {
-    // Disable UART while configuring
-    write_volatile(UART0_CR, 0);
-
-    // Clear interrupts before enabling
-    write_volatile(UART0_ICR, 0x7FF);
-
-    // Set baud rate (depends on UART clock rate)
-    write_volatile(UART0_IBRD, 1);
-    write_volatile(UART0_FBRD, 40);
-
-    // 8-bit, no parity, FIFO enabled
-    write_volatile(UART0_LCRH, (1 << 5) | (1 << 4) | (1 << 6));
-
-    // Enable UART, TX, RX
-    write_volatile(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
-}
-
 pub unsafe fn init() {
     // Disable UART
     write_volatile(UART0_CR, 0);
