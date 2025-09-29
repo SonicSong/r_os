@@ -15,6 +15,13 @@ cargo build
 For testing I recommend using qemu-system-arch64
 ```bash
 rust-objcopy --strip-all -O binary target/aarch64-unknown-none/debug/r_os kernel8.img
+```
+Verify that _start address is at 0x8000
+```bash
+rust-objdump -D target/aarch64-unknown-none/debug/r_os  | less
+```
+Test under QEMU 
+```bash
 qemu-system-aarch64 -M raspi3b -kernel target/aarch64-unknown-none/debug/r_os -serial stdio -d in_asm,cpu_reset
 ```
 
