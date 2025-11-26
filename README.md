@@ -28,3 +28,4 @@ qemu-system-aarch64 -M raspi3b -kernel target/aarch64-unknown-none/debug/r_os -s
 ## Resources used:
 - [rust runs on EVERYTHING (no operating system, just Rust)](https://www.youtube.com/watch?v=jZT8APrzvc4)
 - [OS in Rust tutorial made by Philipp Oppermann](https://os.phil-opp.com/)
+- [Port of Mimiker Operating System for AArch64 Architecture](https://wmi.uwr.edu.pl/wp-content/uploads/sites/288/2022/07/praca-jasiak.pdf)

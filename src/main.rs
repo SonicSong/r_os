@@ -7,15 +7,14 @@ use core::panic::PanicInfo;
 global_asm!(include_str!("boot.s"));
 
 mod modules;
-use modules::uart::uart;
-use modules::uart::uart_config;
+use modules::uart::uart_pl011;
 
 #[no_mangle]
 pub extern "C" fn rust_main() {
 
     unsafe {
-        uart::init();
-        uart::puts("Hello, World!\n");
+        uart_pl011::init();
+        uart_pl011::puts("HelloWorld");
 
     }
 }
