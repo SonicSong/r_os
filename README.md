@@ -22,7 +22,7 @@ rust-objdump -D target/aarch64-unknown-none/debug/r_os  | less
 ```
 Test under QEMU 
 ```bash
-qemu-system-aarch64 -M raspi3b -kernel target/aarch64-unknown-none/debug/r_os -serial stdio -d in_asm,cpu_reset
+qemu-system-aarch64 -M raspi3b -kernel target/aarch64-unknown-none/debug/r_os -serial stdio -d cpu_reset
 ```
 
 ## Resources used:
