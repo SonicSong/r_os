@@ -18,11 +18,13 @@ pub extern "C" fn rust_main() {
         uart_pl011::puts("Running off a custom OS!\n");
 
         loop {
-            uart_pl011::puts(">> ");
+            // uart_pl011::puts(">> ");
             let ch_tes = uart_pl011::getc();
-            uart_pl011::puts(" ");
-            uart_pl011::putc(ch_tes as u8);
-            uart_pl011::puts("\n");
+            ch_tes
+            // uart_pl011::puts(" ");
+            // uart_pl011::putc(ch_tes as u8);
+            // uart_pl011::puts("");
+            // uart_pl011::await_enter();
         }
     }
 }

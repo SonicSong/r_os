@@ -98,7 +98,17 @@ pub fn puts(s: &str) {
 }
 
 // Read from UART
-pub unsafe fn getc() -> char {
+pub unsafe fn getc() {
     while (UART0_FR.read_volatile() & 1<<4) != 0 {}
-    read_volatile(UART0_DR as *const char)
+    let enter: u32 = read_volatile(UART0_DR);
+    if (enter == 0x0A || enter == 0x0D) {
+        puts("\r\n");
+    } else {
+        putc(enter as u8);
+    }
+}
+
+pub unsafe fn await_enter() {
+    while (UART0_FR.read_volatile() & 1<<4) != 0 {}
+
 }
