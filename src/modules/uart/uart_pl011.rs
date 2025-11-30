@@ -98,17 +98,15 @@ pub fn puts(s: &str) {
 }
 
 // Read from UART
-pub unsafe fn getc() {
+pub unsafe fn getc() -> u32{
+    // getc should also return u32 to be able to add that character or symbol to the str buffer so it can be "interpreted" by proto_shell to call for example for echo or help.
     while (UART0_FR.read_volatile() & 1<<4) != 0 {}
     let enter: u32 = read_volatile(UART0_DR);
     if (enter == 0x0A || enter == 0x0D) {
         puts("\r\n");
+        enter
     } else {
         putc(enter as u8);
+        enter
     }
-}
-
-pub unsafe fn await_enter() {
-    while (UART0_FR.read_volatile() & 1<<4) != 0 {}
-
 }

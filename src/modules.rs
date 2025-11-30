@@ -10,3 +10,7 @@ pub mod gpu {
 pub mod memory {
     pub mod buffer;
 }
+
+pub mod shell {
+    pub mod proto_shell;
+}
