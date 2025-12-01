@@ -1,0 +1,1 @@
+const MAILBOX_BASE_OFFSET: usize = 0xB880;

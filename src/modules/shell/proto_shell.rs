@@ -21,7 +21,7 @@ pub unsafe fn proto_shell_init() {
     let mut string_input: String<ARG_MAX> = String::new();
     // Later will have to replace uart_pl011 calls to "output" buffer so it will just have to be printed out and not called upon each time I want to print something.
     uart_pl011::puts("> ");
-    loop {
+    for n in 0..ARG_MAX {
         let mut input = uart_pl011::getc();
         if (input == 0x0A || input == 0x0D) {
             proto_shell_exec(&string_input);
