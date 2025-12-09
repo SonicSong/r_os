@@ -9,3 +9,7 @@ const MAILBOX_WRITE:  *mut u32 = (MAILBOX_BASE + 0x20) as *mut u32;
 pub unsafe fn mailbox_read() {
 
 }
+
+pub unsafe fn gpu_init() {
+    
+}
