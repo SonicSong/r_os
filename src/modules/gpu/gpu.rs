@@ -10,6 +10,21 @@ pub unsafe fn mailbox_read() {
 
 }
 
+pub unsafe fn mailbox_send() {
+    
+}
+
 pub unsafe fn gpu_init() {
     
+}
+
+struct mailbox_status {
+    reserved: u32,
+    empty: u8,
+    full: u8,
+}
+
+struct mailbox_message {
+    channel: u8,
+    data: u32,
 }
