@@ -36,6 +36,7 @@ pub unsafe fn proto_shell_clear() {
 
 }
 
+// Those are some simple "functions" that have to just simply work as simple commands. It's not real shell in any level.
 pub unsafe fn proto_shell_echo(word: &str) {
     // For now it calls uart_pl011 to output to UART but later it has to be changed to something internal that returns just string to be displayed
     uart_pl011::puts(word);
