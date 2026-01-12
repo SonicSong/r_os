@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+// extern crate alloc;
 
 use core::panic::PanicInfo;
 
@@ -7,7 +8,7 @@ use core::panic::PanicInfo;
 
 mod modules;
 use modules::uart::uart_pl011;
-use modules::shell::proto_shell;
+// use modules::shell::proto_shell;
 
 mod boot {
     use core::arch::global_asm;
@@ -24,15 +25,19 @@ pub extern "C" fn _start() {
         uart_pl011::init();
         uart_pl011::puts("Hello World.\n");
         uart_pl011::puts("Running off a custom OS!\n\n");
-        uart_pl011::puts(proto_shell::proto_shell_help());
+        // uart_pl011::puts(proto_shell::proto_shell_help());
 
         loop {
-            proto_shell::proto_shell_init();
+            uart_pl011::init();
+            uart_pl011::puts("Hello World.\n");
+            uart_pl011::puts("Running off a custom OS!\n\n");
+
+            // proto_shell::proto_shell_init();
             // uart_pl011::puts(">> ");
             // let mut ch_test: u8;
             // ch_test = uart_pl011::getc();
 
-            // uart_pl011::puts(" ");
+            // uart_pl011::puts("A");
             // uart_pl011::putc(ch_tes as u8);
             // uart_pl011::puts("");
             // uart_pl011::await_enter();

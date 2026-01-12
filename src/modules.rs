@@ -3,14 +3,14 @@ pub mod uart {
     pub mod uart_mini;
 }
 
-pub mod gpu {
-    pub mod gpu;
-}
-
-pub mod memory {
-    pub mod buffer;
-}
-
-pub mod shell {
-    pub mod proto_shell;
-}
+// pub mod gpu {
+//     pub mod gpu;
+// }
+//
+// pub mod memory {
+//     pub mod buffer;
+// }
+//
+// pub mod shell {
+//     pub mod proto_shell;
+// }

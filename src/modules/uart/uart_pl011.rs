@@ -1,7 +1,6 @@
+use core::arch::asm;
 use core::ptr::write_volatile;
 use core::ptr::read_volatile;
-use core::fmt::{self, Write};
-use bitflags::bitflags;
 
 //TODO: Implement working FIFO for UART PL011
 
@@ -10,8 +9,18 @@ use bitflags::bitflags;
 // BUT THE DOCS AREN'T. FOR THE LOVE OF GOD. 0x3E00_0000 .. 0x3FFF_FFFF THOSE ADDRESSES ARE FOR GPU PERIPHERAL ACCESS
 
 const PERIPHERAL_BASE: usize = 0x3F000000;
+const GPPUD_OFFSET: usize = 0x200000;
 const UART0_OFFSET: usize = 0x0020_1000;
 const UART0_BASE: usize = PERIPHERAL_BASE + UART0_OFFSET;
+const GPPUD_BASE: usize = PERIPHERAL_BASE + GPPUD_OFFSET;
+
+// Controls actuation of pull up/down to ALL GPIO pins.
+// GPPUD = (GPIO_BASE + 0x94),
+const GPPUD : *mut u32 = (GPPUD_BASE + 0x94) as *mut _;
+
+// Controls actuation of pull up/down for specific GPIO pin.
+// GPPUDCLK0 = (GPIO_BASE + 0x98),
+const GPPUDCLK0: *mut u32 = (GPPUD_BASE + 0x98) as *mut _;
 
 /// Data Register
 const UART0_DR : *mut u32 = (UART0_BASE + 0x00) as *mut _;
@@ -34,26 +43,64 @@ const UART0_IMSC : *mut u32 = (UART0_BASE + 0x38) as *mut _;
 /// Interupt Clear Register
 const UART0_ICR : *mut u32 = (UART0_BASE + 0x44) as *mut _;
 
+// The offsets for Mailbox registers
+// MBOX_BASE    = 0xB880,
+// MBOX_READ    = (MBOX_BASE + 0x00),
+// MBOX_STATUS  = (MBOX_BASE + 0x18),
+// MBOX_WRITE   = (MBOX_BASE + 0x20)
+
+const MBOX_BASE: usize = PERIPHERAL_BASE + 0xB880;
+const MBOX_READ : *mut u32 = (MBOX_BASE + 0x00) as *mut _;
+const MBOX_STATUS : *mut u32 = (MBOX_BASE + 0x18) as *mut _;
+const MBOX_WRITE : *mut u32 = (MBOX_BASE + 0x20) as *mut _;
+
+pub unsafe fn delay(mut count: u32) {
+    asm!(
+    "1:",
+    "subs {cnt}, {cnt}, #1",
+    "bne 1b",
+    cnt = inout(reg) count => count,
+    options(nostack, nomem, preserves_flags),
+    );
+}
+
+// A Mailbox message with set clock rate of PL011 to 3MHz tag
+#[repr(align(16))]
+pub struct AlignedBuf([u32; 9]);
+pub static mut MBOX: AlignedBuf = AlignedBuf([9*4, 0, 0x38002, 12, 8, 2, 3_000_000, 0, 0]);
+
 pub unsafe fn init() {
     // Disable UART
-    write_volatile(UART0_CR, 0);
+    write_volatile(UART0_CR, 0x00000000);
+    delay(150);
+    write_volatile(GPPUD, 0x00000000);
 
-    /*
-    Baud = 115200bps; UART_CLOCK = 48000000
-    Divider = UART_CLOCK/(16 * Baud)
-    Fraction part register = (Fractional part * 64) + 0.5
+    write_volatile(GPPUDCLK0, (1 << 14) | (1 << 15));
+    delay(150);
 
-    Div = 48000000/(16 * 115200) = 26.04166666666667 ~= 26 = 0x1A
-    Frac = (.0416 * 64) + 0.5 = 3.1624 ~= 3 = 3
-    */
-    write_volatile(UART0_IBRD, 0x1A);
-    write_volatile(UART0_FBRD, 3);
+    write_volatile(GPPUDCLK0, 0x00000000);
+
+    write_volatile(UART0_ICR, 0x7FF);
+
+    // if (raspi >= 3) {
+    //     // UART_CLOCK = 30000000;
+    //     unsigned int r = (((unsigned int)(&mbox) & ~0xF) | 8);
+    //     // wait until we can talk to the VC
+    //     while ( mmio_read(MBOX_STATUS) & 0x80000000 ) { }
+    //     // send our message to property channel and wait for the response
+    //     mmio_write(MBOX_WRITE, r);
+    //     while ( (mmio_read(MBOX_STATUS) & 0x40000000) || mmio_read(MBOX_READ) != r ) { }
+    // }
+
+    write_volatile(UART0_IBRD, 1);
+    write_volatile(UART0_FBRD, 40);
 
     // 8 bits, no parity, 1 stop bit, FIFO enabled
-    write_volatile(UART0_LCRH, 0x70);
+    write_volatile(UART0_LCRH, (1 << 4) | (1 << 5) | (1 << 6));
+    write_volatile(UART0_IMSC, (1 << 1) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10));
 
     // Enable UART, TX, RX
-    write_volatile(UART0_CR, 0x301);
+    write_volatile(UART0_CR, (1 << 0) | (1 << 8) | (1 << 9));
 }
 
 // Write a character to UART

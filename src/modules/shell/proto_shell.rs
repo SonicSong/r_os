@@ -1,6 +1,6 @@
+use alloc::vec::Vec;
 use crate::modules::uart::uart_pl011;
 
-use heapless::String;
 use crate::modules::shell::proto_shell;
 
 const ARG_MAX: usize = 2048;
@@ -18,7 +18,8 @@ pub unsafe fn proto_shell_exec(cmd: &str) {
 }
 
 pub unsafe fn proto_shell_init() {
-    let mut string_input: String<ARG_MAX> = String::new();
+    let mut string_input: ;
+    // let mut string_inp: Vec<ARG_MAX>;
     // Later will have to replace uart_pl011 calls to "output" buffer so it will just have to be printed out and not called upon each time I want to print something.
     uart_pl011::puts("> ");
     for n in 0..ARG_MAX {
