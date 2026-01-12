@@ -9,7 +9,7 @@ use bitflags::bitflags;
 // No idea how it works in there... And I've been reading BCM2837 peripherals!!! But in theory they both are compatible...
 // BUT THE DOCS AREN'T. FOR THE LOVE OF GOD. 0x3E00_0000 .. 0x3FFF_FFFF THOSE ADDRESSES ARE FOR GPU PERIPHERAL ACCESS
 
-const PERIPHERAL_BASE: usize = 0x20000000;
+const PERIPHERAL_BASE: usize = 0x3F000000;
 const UART0_OFFSET: usize = 0x0020_1000;
 const UART0_BASE: usize = PERIPHERAL_BASE + UART0_OFFSET;
 

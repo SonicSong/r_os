@@ -1,5 +1,7 @@
 [build]
-target='aarch64-unknown-none'
+#target='aarch64-unknown-none'
+target='armv7a-none-eabi'
 
-[target.aarch64-unknown-none]
-rustflags = ["-C", "link-arg=--script=./linker.ld"]
+#[target.aarch64-unknown-none]
+#[target.armv7a-none-eabi]
+#rustflags = ["-C", "link-arg=--script=./linker.ld"]

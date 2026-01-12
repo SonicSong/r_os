@@ -1,17 +1,24 @@
 #![no_std]
 #![no_main]
 
-use core::arch::global_asm;
 use core::panic::PanicInfo;
 
-global_asm!(include_str!("boot.s"));
+// global_asm!(include_str!("boot.s"));
 
 mod modules;
 use modules::uart::uart_pl011;
 use modules::shell::proto_shell;
 
+mod boot {
+    use core::arch::global_asm;
+
+    global_asm!(
+        ".section .text._start"
+    );
+}
+
 #[no_mangle]
-pub extern "C" fn rust_main() {
+pub extern "C" fn _start() {
 
     unsafe {
         uart_pl011::init();
