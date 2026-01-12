@@ -69,6 +69,14 @@ pub unsafe fn delay(mut count: u32) {
 pub struct AlignedBuf([u32; 9]);
 pub static mut MBOX: AlignedBuf = AlignedBuf([9*4, 0, 0x38002, 12, 8, 2, 3_000_000, 0, 0]);
 
+unsafe fn mmio_read(addr: *const u32) -> u32 {
+    read_volatile(addr)
+}
+
+unsafe fn mmio_write(addr: *mut u32, val: u32) {
+    write_volatile(addr, val)
+}
+
 pub unsafe fn init() {
     // Disable UART
     write_volatile(UART0_CR, 0x00000000);
@@ -91,6 +99,22 @@ pub unsafe fn init() {
     //     mmio_write(MBOX_WRITE, r);
     //     while ( (mmio_read(MBOX_STATUS) & 0x40000000) || mmio_read(MBOX_READ) != r ) { }
     // }
+
+    // build r = ((&mbox as usize) & !0xF) | 8
+    let base = (&MBOX.0 as *const u32) as usize;
+    let r = ((base & !0xF) | 8) as u32;
+
+    // wait until we can talk to the VC
+    while (mmio_read(MBOX_STATUS) & 0x8000_0000) != 0 {}
+
+    // send our message to property channel
+    mmio_write(MBOX_WRITE, r);
+
+    // wait for response
+    loop {
+        if (mmio_read(MBOX_STATUS) & 0x4000_0000) != 0 { continue; }
+        if mmio_read(MBOX_READ) == r { break; }
+    }
 
     write_volatile(UART0_IBRD, 1);
     write_volatile(UART0_FBRD, 40);
