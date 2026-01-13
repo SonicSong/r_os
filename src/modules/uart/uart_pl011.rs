@@ -1,5 +1,5 @@
 use core::arch::asm;
-use core::ptr::write_volatile;
+use core::ptr::{write_unaligned, write_volatile};
 use core::ptr::read_volatile;
 
 //TODO: Implement working FIFO for UART PL011
@@ -130,8 +130,8 @@ pub unsafe fn init() {
 // Write a character to UART
 pub fn putc(c: u8) {
     unsafe {
-        while (UART0_FR.read_volatile() & 1<<5) != 0 {}
-        write_volatile(UART0_DR, c as u32);
+        while (mmio_read(UART0_FR) & 1<<5) != 0 {}
+        mmio_write(UART0_DR, c as u32);
     }
 }
 
@@ -145,8 +145,8 @@ pub fn puts(s: &str) {
 // Read from UART
 pub unsafe fn getc() -> u8{
     // getc should also return u32 to be able to add that character or symbol to the str buffer so it can be "interpreted" by proto_shell to call for example for echo or help.
-    while (UART0_FR.read_volatile() & 1<<4) != 0 {}
-    let enter: u8 = read_volatile(UART0_DR) as u8;
+    while (mmio_read(UART0_FR) & 1<<4) != 0 {}
+    let enter: u8 = mmio_read(UART0_DR) as u8;
     if (enter == 0x0A || enter == 0x0D) {
         puts("\r\n");
         enter

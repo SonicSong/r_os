@@ -42,6 +42,10 @@ Objcopy to export to img. (It leaves garbage inside the img file and I am still 
 ```bash
 rust-objcopy -O binary target/armv7a-none-eabi/debug/r_os kernel7.img
 ```
+or
+```bash
+arm-none-eabi-objcopy -O binary target/armv7a-none-eabi/debug/r_os ./kernel7.img
+```
 
 ## Resources used:
 - [rust runs on EVERYTHING (no operating system, just Rust)](https://www.youtube.com/watch?v=jZT8APrzvc4)

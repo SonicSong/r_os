@@ -1,6 +1,6 @@
 pub mod uart {
     pub mod uart_pl011;
-    pub mod uart_mini;
+    // pub mod uart_mini;
 }
 
 // pub mod gpu {
